@@ -1,0 +1,27 @@
+name: Checkout Other Repo's Latest Commit
+
+on:
+  workflow_dispatch:
+
+jobs:
+  checkout-and-retrieve-sha:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: lwtlab/lwt-core
+          token: ${{ secrets.GH_PAT }}
+          submodules: true
+
+      # Get the SHA of the latest commit
+      - name: Get SHA of the latest commit
+        id: latest-commit-sha
+        run: |
+          cd other-repo
+          LATEST_SHA=$(git rev-parse HEAD)
+          echo "Latest commit SHA is $LATEST_SHA"
+          echo "::set-output name=sha::$LATEST_SHA"
+
+      # Use the latest commit SHA in subsequent steps
+      - name: Print the latest commit SHA
+        run: echo "The latest commit SHA is ${{ steps.latest-commit-sha.outputs.sha }}"
