@@ -11,22 +11,22 @@ jobs:
   checkout-and-retrieve-sha:
     runs-on: ubuntu-latest
     steps:
-      - name: Run a command
-        run: |
-          echo "The event payload is: ${{ github.event.client_payload }}"
-      - uses: actions/checkout@v3
+      - name: Checkout code for getting latest commit
+        uses: actions/checkout@v3
         with:
           repository: lwtlab/lwt-core
           token: ${{ secrets.GH_PAT }}
-          submodules: true
 
-      - name: Get SHA of the latest commit
-        id: latest-commit-sha
+      - name: Setup variable REPO_REF
         # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-of-writing-an-environment-variable-to-github_env
         run: |
-          LATEST_SHA=$(git rev-parse --short HEAD)
-          echo "Latest commit SHA is $LATEST_SHA"
-          echo "REPO_REF=$LATEST_SHA" >> "$GITHUB_ENV"
+          if [ -z "${{ github.event.client_payload.ref }}" ]; then
+            echo "REPO_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+            echo "REPO_TAG=" >> $GITHUB_ENV
+          else
+            echo "REPO_REF=${{ github.event.client_payload.ref }}" >> $GITHUB_ENV
+            echo "REPO_TAG=${{ github.event.client_payload.tag }}" >> $GITHUB_ENV
+          fi
 
       - name: Print the latest commit SHA
-        run: echo "The latest commit SHA is $REPO_REF"
+        run: echo "The latest commit SHA is $REPO_REF, $REPO_TAG"
