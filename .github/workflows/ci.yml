@@ -1,6 +1,7 @@
 name: Checkout Other Repo's Latest Commit
 
 on:
+  # https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow
   workflow_dispatch:
 
 jobs:
@@ -13,14 +14,13 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           submodules: true
 
-      # Get the SHA of the latest commit
       - name: Get SHA of the latest commit
         id: latest-commit-sha
+        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-of-writing-an-environment-variable-to-github_env
         run: |
-          LATEST_SHA=$(git rev-parse HEAD)
+          LATEST_SHA=$(git rev-parse --short HEAD)
           echo "Latest commit SHA is $LATEST_SHA"
-          echo "::set-output name=sha::$LATEST_SHA"
+          echo "REPO_REF=$LATEST_SHA" >> "$GITHUB_ENV"
 
-      # Use the latest commit SHA in subsequent steps
       - name: Print the latest commit SHA
-        run: echo "The latest commit SHA is ${{ steps.latest-commit-sha.outputs.sha }}"
+        run: echo "The latest commit SHA is $REPO_REF"
