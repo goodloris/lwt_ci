@@ -3,11 +3,17 @@ name: Checkout Other Repo's Latest Commit
 on:
   # https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow
   workflow_dispatch:
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#repository_dispatch
+  repository_dispatch:
+    types: [ build_npm ]
 
 jobs:
   checkout-and-retrieve-sha:
     runs-on: ubuntu-latest
     steps:
+      - name: Run a command
+        run: |
+          echo "The event payload is: ${{ github.event.client_payload }}"
       - uses: actions/checkout@v3
         with:
           repository: lwtlab/lwt-core
