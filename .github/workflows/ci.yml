@@ -17,7 +17,6 @@ jobs:
       - name: Get SHA of the latest commit
         id: latest-commit-sha
         run: |
-          cd other-repo
           LATEST_SHA=$(git rev-parse HEAD)
           echo "Latest commit SHA is $LATEST_SHA"
           echo "::set-output name=sha::$LATEST_SHA"
